@@ -10,13 +10,24 @@ import UIKit
 import RealmSwift
 import UserNotifications
 
-class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
+class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource ,UISearchBarDelegate{
+    
 
     @IBOutlet weak var tableView: UITableView!
-    @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
+    @IBOutlet weak var searchBar: UINavigationItem!
     
     let realm = try! Realm()
+
+    var searchBar = UISearchController()
     
+    searchBar.delegate = self
+    searchBar.searchBarStyle = UISearchBarStyle.default
+    searchBar.showsSearchResultsButton = false
+    searchBar.placeholder = "検索"
+    searchBar.setValue("キャンセル", forKey: "_cancelButtonText")
+    searchBar.tintColor = UIColor.red
+    
+    tableView.tableHeaderView = searchBar
     // DB内のタスクが格納されるリスト。
     // 日付近い順\順でソート：降順
     // 以降内容をアップデートするとリスト内は自動的に更新される。
@@ -30,8 +41,8 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         tableView.dataSource = self
         tableView.delegate = self
         
-        _searchBar.delegate = self;
-             
+        
+        
     }
     
     
@@ -39,6 +50,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
 
     //データの数（セルの数）を返すメソッド
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
