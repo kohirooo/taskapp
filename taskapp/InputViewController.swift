@@ -14,18 +14,20 @@ class InputViewController: UIViewController {
     @IBOutlet weak var contentsTextVIew: UITextView!
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var dataPicker: UIDatePicker!
-
+    @IBOutlet weak var categoryUITextField: UITextField!
+    
     let realm = try! Realm()
     var task:Task!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        //カテゴリを表示
         // 背景をタップしたらdismissKeyboardメソッドを呼ぶように設定する
         let tapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target:self, action:#selector(dismissKeyboard))
         self.view.addGestureRecognizer(tapGesture)
         
-        titleTextField.text = task.title//ここ
+        titleTextField.text = task.title
+        categoryUITextField.text = task.category
         contentsTextVIew.text = task.contents
         dataPicker.date = task.date as Date
     }
@@ -47,6 +49,9 @@ class InputViewController: UIViewController {
             self.task.contents = self.contentsTextVIew.text
             self.task.date = self.dataPicker.date as NSDate
             self.realm.add(self.task, update: true)
+            self.task.category = self.categoryUITextField.text!
+            
+            
         }
         
         super.viewWillDisappear(animated)
@@ -70,7 +75,7 @@ class InputViewController: UIViewController {
         // ローカル通知を登録
         let center = UNUserNotificationCenter.current()
         center.add(request) { (error) in
-            print(error)
+            print(error ?? "error-----nil")
         }
         
         // 未通知のローカル通知一覧をログ出力

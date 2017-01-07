@@ -11,27 +11,17 @@ import RealmSwift
 import UserNotifications
 
 class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource ,UISearchBarDelegate{
-    
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var searchBar: UINavigationItem!
+    @IBOutlet weak var searchBar: UISearchBar!
+   // @IBOutlet weak var searchBar: UINavigationItem!
     
-    let realm = try! Realm()
-
-    var searchBar = UISearchController()
-    
-    searchBar.delegate = self
-    searchBar.searchBarStyle = UISearchBarStyle.default
-    searchBar.showsSearchResultsButton = false
-    searchBar.placeholder = "検索"
-    searchBar.setValue("キャンセル", forKey: "_cancelButtonText")
-    searchBar.tintColor = UIColor.red
-    
-    tableView.tableHeaderView = searchBar
     // DB内のタスクが格納されるリスト。
     // 日付近い順\順でソート：降順
     // 以降内容をアップデートするとリスト内は自動的に更新される。
-    let taskArray = try! Realm().objects(Task.self).sorted(byProperty: "date", ascending: false)   // ←追加
+    
+    let realm = try! Realm()
+    let taskArray = try! Realm().objects(Task.self).sorted(byProperty: "date", ascending: false)
     
     
     override func viewDidLoad() {
@@ -40,8 +30,18 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         
         tableView.dataSource = self
         tableView.delegate = self
+        //var searchBar:UISearchBar!
         
         
+        //検索バー作成
+        //searchBar = UISearchBar()
+        searchBar.delegate = self
+        /*searchBar.frame = CGRect(x:0, y:0, width:300, height:80)
+        searchBar.layer.position = CGPoint(x: self.view.bounds.width/2, y: 100)
+        searchBar.showsCancelButton = true
+        
+        tableView.tableHeaderView = searchBar
+*/
         
     }
     
@@ -66,6 +66,8 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         // Cellに値を設定する.
         let task = taskArray[indexPath.row]
         cell.textLabel?.text = task.title
+//        cell.textLabel?.text = task.category
+        //cell.textLabel?.text = task.category
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
@@ -108,7 +110,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
             
             // データベースから削除する
             try! realm.write {
-                self.realm.delete(task)
+                self.realm.delete(self.taskArray[indexPath.row])
                 tableView.deleteRows(at: [indexPath as IndexPath], with: UITableViewRowAnimation.fade)
             }
             
