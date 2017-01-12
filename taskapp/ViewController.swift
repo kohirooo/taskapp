@@ -14,14 +14,12 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
-   // @IBOutlet weak var searchBar: UINavigationItem!
     
     // DB内のタスクが格納されるリスト。
     // 日付近い順\順でソート：降順
     // 以降内容をアップデートするとリスト内は自動的に更新される。
-    
     let realm = try! Realm()
-    let taskArray = try! Realm().objects(Task.self).sorted(byProperty: "date", ascending: false)
+    var taskArray = try! Realm().objects(Task.self).sorted(byProperty: "date", ascending: false)
     
     
     override func viewDidLoad() {
@@ -30,18 +28,11 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         
         tableView.dataSource = self
         tableView.delegate = self
-        //var searchBar:UISearchBar!
         
         
         //検索バー作成
         //searchBar = UISearchBar()
         searchBar.delegate = self
-        /*searchBar.frame = CGRect(x:0, y:0, width:300, height:80)
-        searchBar.layer.position = CGPoint(x: self.view.bounds.width/2, y: 100)
-        searchBar.showsCancelButton = true
-        
-        tableView.tableHeaderView = searchBar
-*/
         
     }
     
@@ -66,8 +57,6 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         // Cellに値を設定する.
         let task = taskArray[indexPath.row]
         cell.textLabel?.text = task.title
-//        cell.textLabel?.text = task.category
-        //cell.textLabel?.text = task.category
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
@@ -141,6 +130,13 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
             
             inputViewController.task = task
         }
+    }
+    
+    //サーチバーで検索
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let predicate = NSPredicate(format: "category = %@", searchBar.text!)
+        taskArray = realm.objects(Task.self).filter(predicate)
+        tableView.reloadData()
     }
 }
 
